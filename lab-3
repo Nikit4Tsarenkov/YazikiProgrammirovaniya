@@ -1,0 +1,33 @@
+.stack 100h
+.data
+  temp dw 29 
+  x dw 100 
+  y dw 300
+  
+  
+
+
+.code
+
+start:
+mov ax,@data                ;F=(4589*29)/x+(Y+5625)
+mov ds,ax
+   
+  
+   mov ax,4589
+   mul temp
+   div x  
+   add ax,y 
+   
+   mov temp,5625
+   
+   add ax,temp
+   mov bx,ax          
+      
+   
+         
+ 
+ mov ax,4c00h
+ int 21h        
+         
+end start
