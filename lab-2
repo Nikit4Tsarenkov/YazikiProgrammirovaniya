@@ -20,8 +20,7 @@
 		  add bx,y; 9635+x+y 
 		  
 		   sub temp,bx   ;12-(9635+X+Y)		
-		   mov al,z
-		   cbw
+		
 		    add temp,ax ; 12-(9635+X+Y)+Z
 		     mov bx,temp   
 		    add bx, num
