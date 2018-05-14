@@ -14,24 +14,24 @@
  mov ax,@data
  mov ds,ax
 
-       mov bx,96385	         ;F=12-(96385+X+Y)+Z+3698 = 7CF5  
+       mov bx,9635	         ;F=12-(9635+X+Y)+Z+3698 = 7CF5  
 		mov al,x
 		cbw
-		add bx,ax ;96385+x
+		add bx,ax ;9635+x
 		 
 		 
-		  add bx,y; 96385+x+y 
+		  add bx,y; 9635+x+y 
 		  
-		   sub temp,bx   ;12-(96385+X+Y)
+		   sub temp,bx   ;12-(9635+X+Y)
 		   mov ax,z
-		    add temp,ax ; 12-(96385+X+Y)+Z
+		    add temp,ax ; 12-(9635+X+Y)+Z
 		     mov bx,temp   
 		    add num,bx
 		    
 		  
 		  
 				      
-		;    mov ax,943Bh  ; 3698=0E72
+		;    mov ax,943Bh  ; 3698= 0E72
 		 ;   add ax,bx
 		  ; mov cx,11EDh  ;cx->12     
 		   ; sub cx,ax
