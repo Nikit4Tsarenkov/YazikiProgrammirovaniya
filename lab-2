@@ -10,9 +10,7 @@
   num dd 3698 
     
 .code
- start:  
- mov ax,@data
- mov ds,ax
+  
 
        mov bx,9635	         ;F=12-(9635+X+Y)+Z+3698 = 7CF5  
 		mov al,x
@@ -42,4 +40,4 @@
  
  mov ax,4c00h  
  int 21h
- end start
+
