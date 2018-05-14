@@ -20,23 +20,13 @@
 		 
 		  add bx,y; 9635+x+y 
 		  
-		   sub temp,bx   ;12-(9635+X+Y)
-		   mov ax,z
+		   sub temp,bx   ;12-(9635+X+Y)		
+		   mov al,z
+		   cbw
 		    add temp,ax ; 12-(9635+X+Y)+Z
 		     mov bx,temp   
-		    add num,bx
-		    
-		  
-		  
-				      
-		;    mov ax,943Bh  ; 3698= 0E72
-		 ;   add ax,bx
-		  ; mov cx,11EDh  ;cx->12     
-		   ; sub cx,ax
-		 ;   mov f,temp  
-		
-
-   
+		    add bx, num
+		     					      
  
  mov ax,4c00h  
  int 21h
