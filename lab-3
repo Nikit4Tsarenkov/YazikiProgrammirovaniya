@@ -1,33 +1,22 @@
 .stack 100h
 .data
-  temp dw 29 
+ 
   x dw 100 
   y dw 300
-  
-  
-
+  reslt dw ? 
 
 .code
 
 start:
-mov ax,@data                ;F=(4589*29)/x+(Y+5625)
+mov ax,@data                ;F=(12*9635)/x+(y+3698)
 mov ds,ax
    
-  
-   mov ax,4589
-   mul temp
-   div x  
-   add ax,y 
-   
-   mov temp,5625
-   
-   add ax,temp
-   mov bx,ax          
-      
-   
-         
- 
- mov ax,4c00h
- int 21h        
-         
+   mov ax,12
+   mul 9635
+   div x 
+   mov bx,y 
+   add bx,3698
+   add ax,bx
+   mov reslt ,ax
+            
 end start
