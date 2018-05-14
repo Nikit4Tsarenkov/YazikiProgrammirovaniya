@@ -1,7 +1,7 @@
 .stack 100h
 .data
      mas db 0ffAh dup (' ')
-  x db  1
+  x dw  1
   y dw  5
   z dw  6 
   f dw ?        
@@ -13,8 +13,7 @@
   
 
        mov bx,9635	         ;F=12-(9635+X+Y)+Z+3698 = 7CF5  
-		mov al,x
-		cbw
+		mov ax,x
 		add bx,ax ;9635+x
 		 
 		 
