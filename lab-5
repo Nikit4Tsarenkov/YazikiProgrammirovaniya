@@ -1,0 +1,115 @@
+.stack 100h
+.data  
+
+   
+  tmpr dw ?  
+  
+  
+  In_tmpr db 'Enter the temperature: $'
+   attention db 'Dangerous situation!!!$'
+   good db 'Condition of the sensor is normal!$'
+
+.code
+
+start:
+mov ax,@data                
+mov ds,ax
+           
+           
+       
+       mov ah,09h
+       mov dx,offset In_tmpr
+       int 21h  
+                
+        
+                 
+          mov	ah,02h
+          mov	dx,0Dh  
+          int	21h  
+            
+          mov	ah,02h
+          mov	dx,0ah 
+          int	21h   
+        
+            
+       
+       
+       
+        
+        mov 	ah,01h
+        int 	21h 
+         
+          sub 	al,30h	
+           cmp al,-1
+           jle minus
+        mov 	ah,0 	
+        mov 	bx,10
+        mov 	cx,ax 	
+    Input_tmpr: 
+        mov 	ah,01h
+        int 	21h 	
+        cmp 	al,0dh 	; Enter
+        je 	  End_input_tmpr
+        sub 	al,30h	
+        cbw		
+        xchg 	ax,cx	
+        mul 	bx	; ax*10
+        add 	cx,ax	; cx=ax*10+cx
+        jmp  Input_tmpr;
+    
+  End_input_tmpr:  mov tmpr,cx
+                
+   cmp tmpr,45            
+   jge label     
+                    
+         
+               
+                         
+       
+         
+      
+    
+                 
+                 
+   msg:   mov ah,09h
+   mov dx,offset good
+   int 21h 
+   jmp exit         
+          
+     label:
+              mov ah,09h
+        mov dx,offset attention
+        int 21h   
+        jmp exit 
+               
+                   minus:
+                   mov 	ah,0 	
+        mov 	bx,10
+        mov 	cx,ax 	
+    Input_tmpr2: 
+        mov 	ah,01h
+        int 	21h 	
+        cmp 	al,0dh 	; Enter
+        je 	  End_input_tmpr2
+        sub 	al,30h	
+        cbw		
+        xchg 	ax,cx	
+        mul 	bx	; ax*10
+        add 	cx,ax	; cx=ax*10+cx
+        jmp  Input_tmpr2;
+    
+  End_input_tmpr2:  mov tmpr,cx
+                   
+           jmp msg       
+                   
+                   
+                   
+                   
+                   
+                   
+               
+      exit:         
+ mov ax,4ch
+ int 21h        
+         
+end start
