@@ -1,0 +1,162 @@
+.stack 100h
+.data  
+
+  temp dw 29 
+  rez dd ?  
+  
+  stroka db 'F=(4589*29)/x+(Y+5625)$' 
+  In_x db 'Input X: $'
+  In_y db 'Input Y: $'
+  
+  x dw ?
+  y dw ?
+
+.code
+
+start:
+mov ax,@data                ;F=(4589*29)/x+(Y+5625)
+mov ds,ax
+       
+       
+       mov ah,09h
+       mov dx,offset stroka
+       int 21h  
+                
+        
+                 
+          mov	ah,02h
+          mov	dx,0Dh  
+          int	21h  
+            
+          mov	ah,02h
+          mov	dx,0ah 
+          int	21h   
+        
+            mov ah,09h
+       mov dx,offset In_x
+       int 21h
+       
+       
+       
+        
+        mov 	ah,01h
+        int 	21h 	
+        sub 	al,30h 
+        mov 	ah,0 	
+        mov 	bx,10
+        mov 	cx,ax 	
+    Input_x: 
+        mov 	ah,01h
+        int 	21h 	
+        cmp 	al,0dh 	; Enter
+        je 	  End_input_x
+        sub 	al,30h	
+        cbw		
+        xchg 	ax,cx	
+        mul 	bx	; ax*10
+        add 	cx,ax	; cx=ax*10+cx
+        jmp  Input_x;
+    
+  End_input_x:  mov x,cx
+                
+               
+        mov	dx,0ah            
+        mov	ah,02h
+        int	21h      
+           
+           
+           mov ah,09h
+       mov dx,offset In_y
+       int 21h        
+            
+                    
+                  mov 	ah,01h
+        int 	21h 	
+        sub 	al,30h 
+        mov 	ah,0 	
+        mov 	bx,10
+        mov 	cx,ax 	
+    Input_y: 
+        mov 	ah,01h
+        int 	21h 	
+        cmp 	al,0dh 	; Enter
+        je 	  End_input_y
+        sub 	al,30h	
+        cbw		
+        xchg 	ax,cx	
+        mul 	bx	; ax*10
+        add 	cx,ax	; cx=ax*10+cx
+        jmp  Input_y;
+    
+  End_input_y:  mov y,cx   
+                    
+                         
+       
+   mov ax,4589
+   mul temp   
+  
+   div x  
+   add ax,y
+   
+   add ax,5625
+   
+               
+   mov bx,ax          
+      
+    
+                 
+                 
+                 
+            mov	ah,02h
+          mov	dx,0Dh  
+          int	21h  
+            
+          mov	ah,02h
+          mov	dx,0ah 
+          int	21h     
+          
+ mov rez, bx
+mov rez+2, dx 
+mov cx, dx    
+
+mov ax,bx
+cwd  ;ax->dx:ax   
+
+mov bx, 10h
+push -1 
+               
+    digitIn: 
+mov dx, 0
+div bx
+add dx, 30h 
+cmp dx,'9' 
+jg add2
+jmp push2
+add2:
+add dx, 7h 
+push2:
+push dx
+mov dx,0
+cmp ax, 0
+jne digitIn     
+
+    
+               
+               
+
+    digitOut:
+mov ah, 02h
+pop dx
+cmp dx, -1
+je exit
+int 21h
+jmp digitOut
+                         
+             
+exit: 
+       
+ 
+ mov ax,4c00h
+ int 21h        
+         
+end start
