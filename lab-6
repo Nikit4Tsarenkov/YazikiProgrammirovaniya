@@ -135,10 +135,10 @@ mov y,cx
     MOV AL, 0AH       
     INT 10H    
             ; operations
-            ; X * 2^5
+            ; X / 2^5
     mov ax, x
     mov cl, 5
-    shr ax, cl
+    sar ax, cl
     mov x, ax
     mov ax, 0
     mov bx, 0
@@ -149,10 +149,10 @@ mov y,cx
     shl bx,1
     mov y,bx 
             ; rez 
-    mov bx, x
-    add ax, bx 
+    mov ax, x
+    add ax, y 
     mov rez, ax  
-    mov bx, ax 
+ 
             ;chetnost
     test ax, 1       ; esli poslednii bit = 1, to nechet; 0, to chet
     jnz Funeven      ; != , to vivod nechet
