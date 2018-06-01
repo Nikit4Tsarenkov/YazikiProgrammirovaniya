@@ -1,0 +1,268 @@
+; F = Y / 12 + X * 4;      x int; y int
+.data 
+x dw ?
+y dw ?
+rez dw ?
+input_X dw 'Enter the X: $'
+input_Y dw 'Enter the Y: $' 
+enter dw 0dh,0ah,'$'
+minus dw 0dh,0ah,'-$'
+negative dw 0dh,0ah,'negative$'
+positive dw 0dh,0ah,'positive$'
+even dw 0dh,0ah,'even$'
+struneven dw 0dh,0ah,'odd$'
+.code 
+start: 
+    mov ax,@data 
+    mov ds,ax
+    
+    mov ah, 09h        
+    mov dx, offset input_X
+    int 21h 
+    ;Input X:           
+    mov 	ah,01h
+    int 	21h	
+    cmp     al,45
+    je      IsNegative
+
+    sub 	al,48 	
+    mov 	ah,0 	
+    mov 	bx,
+    mov 	cx,ax
+
+InputX: 
+mov 	ah,01h
+int 	21h 	
+cmp 	al,0dh 	
+je 	EndX	
+sub 	al,30h	
+cbw		
+xchg 	ax,cx	
+mul 	bx	
+add 	cx,ax	
+jmp 	InputX	
+EndX:
+    mov 	x,cx    
+    jmp    label1 
+
+IsNegative:
+sub 	al,45    ; --
+mov 	ah,01h
+int 	21h	
+sub 	al,48 	 
+mov 	ah,0 	
+mov 	bx,12
+mov 	cx,ax
+
+InputXNegative: 
+mov 	ah,01h
+int 	21h 	
+cmp 	al,0dh 	
+je 	EndXNegative	
+sub 	ax,30h	     ;al
+;cbw		
+xchg 	ax,cx	
+mul 	bx	
+add 	cx,ax	
+jmp 	InputXNegative	
+EndXNegative:
+sub cx,1             ; obmen znaka
+not cx
+    mov x,cx
+   
+label1:
+MOV AH, 0EH
+MOV AL, 0AH       
+INT 10H 
+
+    ;Input the Y:
+    mov ah, 09h        
+    mov dx, offset input_Y
+    int 21h 
+    
+    mov 	ah,01h
+    int 	21h	
+    cmp     al,45
+    je      IsYNegative
+    
+    sub 	al,48 	
+    mov 	ah,0 	
+    mov 	bx,12
+    mov 	cx,ax
+    
+    InputY: 
+    mov 	ah,01h
+    int 	21h 	
+    cmp 	al,0dh 	
+    je 	EndY	
+    sub 	al,30h	
+    cbw		
+    xchg 	ax,cx	
+    mul 	bx	
+    add 	cx,ax	
+    jmp 	InputY	
+    EndY:
+
+mov 	y,cx 
+jmp label2
+IsYNegative:
+sub 	al,45
+mov 	ah,01h
+int 	21h	
+sub 	al,48 	
+mov 	ah,0 	
+mov 	bx,12
+mov 	cx,ax
+
+InPutYNegative: 
+mov 	ah,01h
+int 	21h 	
+cmp 	al,0dh 	
+je 	EndYNegative	
+sub 	al,30h	
+cbw		
+xchg 	ax,cx	
+mul 	bx	
+add 	cx,ax	
+jmp 	InPutYNegative	
+EndYNegative:
+sub 	cx,1
+not cx
+mov y,cx
+    
+    label2:
+    MOV AH, 0EH
+    MOV AL, 0AH       
+    INT 10H    
+            ; operations
+            ; X * 2^2
+    mov ax, x
+    mov cl, 2
+    shr ax, cl
+    mov x, ax
+    mov ax, 0
+    mov bx, 0
+            ; Y / 12
+    mov bx,y         
+    mov ax,y
+    mov cl, 4
+    shl ax, cl
+    mov cl, 2
+    shr ax,cl
+    add ax,bx 
+    shl ax, 1
+    mov y, ax 
+            ; rez 
+    mov bx, x
+    add ax, bx 
+    mov rez, ax  
+    mov bx, ax 
+            ;chetnost
+    test ax, 1       ; esli poslednii bit = 1, to nechet; 0, to chet
+    jnz Funeven      ; != , to vivod nechet
+    jz Feven         ; =  , to vivod chet
+        Feven: 
+    push ax
+    mov ah, 09h
+    mov dx, offset even
+    int 21h 
+    pop ax
+    jmp TheEnd
+    Funeven:
+push ax
+mov ah, 09h
+mov dx, offset struneven
+int 21h
+pop ax               
+jmp TheEnd
+TheEnd:  
+        ; - or +
+test ax,ax         ; elsi posledni bit
+js IsNegative1     ; = 1
+jns NoSign         ; = 0
+NoSign:	
+mov rez,ax         ; vivod positive, vivod rez
+push ax
+mov ah, 09h
+mov dx, offset positive
+int 21h
+
+mov ah, 09h        
+mov dx, offset enter
+int 21h   
+
+pop ax
+cwd     ;  ax->dx:ax
+mov bx, 12	
+push -1	
+        ; Output
+digitIn1:	
+div bx	
+add dx, 30h	
+push dx	
+mov dx,0	
+cmp ax, 0	
+jne digitIn1	     ;  zf = 0 -> next
+       
+digitOut1:
+mov ah, 02h
+pop dx
+cmp dx, -1
+je exit1   
+int 21h
+jmp digitOut1
+
+exit1:
+mov ax, 4c00h
+int 21h
+ 
+        ; !!! Esli posledni bit = 1, otricatel'noe chislo 
+IsNegative1:             ; vivod negative,-----> vivod - rez
+mov rez,ax 
+push ax
+mov ah, 09h
+mov dx, offset negative
+int 21h     
+
+pop ax  
+cwd  
+push -1	
+        ;Vivod otriczatel'nogo  -
+not dx           ; Perevod otriczatel'nogo v polozhitel'noe
+not ax 
+mov cx,1
+mov bx,0
+add ax,cx
+adc dx,bx        ; Slozhenie s uchetom perenosa
+
+mov bx, 12
+push ax 
+push dx
+                ; vivod - pered chislom, zatem vivod chisla
+mov ah, 09h      
+mov dx, offset minus
+int 21h
+
+pop dx
+pop ax  
+        ; Output
+digitInNegative:	
+div bx	
+add dx, 30h	
+push dx	
+mov dx,0	
+cmp ax, 0	
+jne digitInNegative	
+       
+digitOutNegative:
+mov ah, 02h
+pop dx
+cmp dx, -1
+je exitNegative 
+int 21h
+jmp digitOutNegative
+
+exitNegative: 
+mov ax, 4c00h
+int 21h                     
+end start
