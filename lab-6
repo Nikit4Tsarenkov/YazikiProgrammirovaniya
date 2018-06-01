@@ -27,7 +27,7 @@ start:
 
     sub 	al,48 	
     mov 	ah,0 	
-    mov 	bx,
+    mov 	bx,12
     mov 	cx,ax
 
 InputX: 
