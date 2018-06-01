@@ -1,16 +1,16 @@
-; F = Y / 12 + X * 4;      x int; y int
+; F = Y * 10 + X / 32;      x char; y int
 .data 
 x dw ?
 y dw ?
-rez dw ?
-input_X dw 'Enter the X: $'
-input_Y dw 'Enter the Y: $' 
-enter dw 0dh,0ah,'$'
-minus dw 0dh,0ah,'-$'
-negative dw 0dh,0ah,'negative$'
-positive dw 0dh,0ah,'positive$'
-even dw 0dh,0ah,'even$'
-struneven dw 0dh,0ah,'odd$'
+rez dd ?
+input_X db 'Enter the X: $'
+input_Y db 'Enter the Y: $' 
+enter db 0dh,0ah,'$'
+minus db 0dh,0ah,'-$'
+negative db 0dh,0ah,'negative$'
+positive db 0dh,0ah,'positive$'
+even db 0dh,0ah,'even$'
+struneven db 0dh,0ah,'odd$'
 .code 
 start: 
     mov ax,@data 
@@ -27,7 +27,7 @@ start:
 
     sub 	al,48 	
     mov 	ah,0 	
-    mov 	bx,12
+    mov 	bx,10
     mov 	cx,ax
 
 InputX: 
@@ -51,7 +51,7 @@ mov 	ah,01h
 int 	21h	
 sub 	al,48 	 
 mov 	ah,0 	
-mov 	bx,12
+mov 	bx,10
 mov 	cx,ax
 
 InputXNegative: 
@@ -87,7 +87,7 @@ INT 10H
     
     sub 	al,48 	
     mov 	ah,0 	
-    mov 	bx,12
+    mov 	bx,10
     mov 	cx,ax
     
     InputY: 
@@ -111,7 +111,7 @@ mov 	ah,01h
 int 	21h	
 sub 	al,48 	
 mov 	ah,0 	
-mov 	bx,12
+mov 	bx,10
 mov 	cx,ax
 
 InPutYNegative: 
@@ -135,20 +135,18 @@ mov y,cx
     MOV AL, 0AH       
     INT 10H    
             ; operations
-            ; X * 2^2
+            ; X * 2^5
     mov ax, x
-    mov cl, 2
+    mov cl, 5
     shr ax, cl
     mov x, ax
     mov ax, 0
     mov bx, 0
-            ; Y / 12
+            ; Y * 10
     mov bx,y         
     mov ax,y
-    mov cl, 4
-    shl ax, cl
     mov cl, 2
-    shr ax,cl
+    shl ax, cl
     add ax,bx 
     shl ax, 1
     mov y, ax 
@@ -179,7 +177,7 @@ TheEnd:
         ; - or +
 test ax,ax         ; elsi posledni bit
 js IsNegative1     ; = 1
-jns NoSign         ; = 0
+jns NoSign         ; =0
 NoSign:	
 mov rez,ax         ; vivod positive, vivod rez
 push ax
@@ -193,7 +191,7 @@ int 21h
 
 pop ax
 cwd     ;  ax->dx:ax
-mov bx, 12	
+mov bx, 10	
 push -1	
         ; Output
 digitIn1:	
@@ -235,7 +233,7 @@ mov bx,0
 add ax,cx
 adc dx,bx        ; Slozhenie s uchetom perenosa
 
-mov bx, 12
+mov bx, 10
 push ax 
 push dx
                 ; vivod - pered chislom, zatem vivod chisla
