@@ -14,7 +14,7 @@
 .code
 
 start:
-mov ax,@data                ;F=(4589*29)/x+(Y+5625)
+mov ax,@data                ;F=(9635*12)/x+(Y+3698)
 mov ds,ax
        
        
