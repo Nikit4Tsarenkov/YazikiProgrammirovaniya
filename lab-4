@@ -95,7 +95,7 @@ mov ds,ax
    mov ax,9635
    mul temp   
   
-   div x  
+   idiv x  
    add ax,y
    
    add ax,3698
@@ -127,7 +127,7 @@ push -1
                
     digitIn: 
 mov dx, 0
-div bx
+idiv bx
 add dx, 30h 
 cmp dx,'9' 
 jg add2
