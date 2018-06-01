@@ -1,0 +1,76 @@
+
+.data
+x dw ?
+y dw ?
+.code
+ 
+main proc far
+
+mov al, 12h
+mov ah, 0   ; 
+int 10h   
+
+mov ax, 1   ; cursor
+int 33h
+
+Next:
+mov ax, 3   ; pozicii cursor
+int 33h 
+
+call del
+call putpix ; vizov proceduri
+jmp Next
+
+mov ah,4ch
+int 21h
+main endp
+
+
+
+
+
+;procedure to print
+putpix proc     
+  mov al, 7   ; cvet
+  mov ah, 0ch    
+  shr cx,1    ; 
+  int 10h     ;
+  ret
+putpix endp  
+
+del proc 
+  push ax 
+  push cx   
+  push dx 
+  push bx 
+  sub cx,x
+  jz yes1;0
+  jnz NO ;не 0
+  yes1:
+    sub dx,y
+    jz yes2
+    jnz NO
+  yes2:
+    ;mov ax,03h  
+    mov al,13h 
+    mov ah,0  
+    int 10h ;  ochistka
+    jmp 11
+
+NO: 
+;MOV CL,'N'
+;MOV AH,2
+;MOV DL,CL
+;INT 21H
+  11: 
+
+    pop bx
+    pop dx
+    pop cx
+    pop ax 
+    mov x,cx
+    mov y,dx 
+    ret
+del endp 
+code ends 
+
