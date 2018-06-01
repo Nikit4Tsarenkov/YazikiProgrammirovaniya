@@ -143,13 +143,11 @@ mov y,cx
     mov ax, 0
     mov bx, 0
             ; Y * 10
-    mov bx,y         
-    mov ax,y
-    mov cl, 2
-    shl ax, cl
-    add ax,bx 
-    shl ax, 1
-    mov y, ax 
+    mov bx,y
+    shl bx,2
+    add bx,y
+    shl bx,1
+    mov y,bx 
             ; rez 
     mov bx, x
     add ax, bx 
