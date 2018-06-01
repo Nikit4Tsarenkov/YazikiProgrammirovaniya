@@ -1,34 +1,25 @@
-MODEL	small
-STACK	256
-.data
-fnd	db	0ah,0dh,'‘Символ найден! ','$'
-nochar	db	0ah,0dh,'‘Символ не найден.','$'
-string	db	'15+24+17=56',0ah,0dh,'$'
-.code
-ASSUME ds:@data,es:@data
-main:
-mov	ax,@data
-mov	ds,ax
-mov	es,ax
-mov	ah,09h
-lea	dx,string
-int	21h
-mov	al,'+'
-cld
-lea	di,string
-mov	cx,28
-repne	scas	string
-je	found
-failed:
-mov	ah,09h
-lea	dx,nochar
-int	21h
-jmp	exit
-found:
-mov	ah,09h
-lea	dx,fnd
-int	21h
-exit:
-mov	ax,4c00h
-int	21h
-end	main
+include labe.txt 
+
+.stack 100h 
+
+.data 
+text db ' this is example text','$' 
+replacement db ? ; changed  
+point db '.$',0 
+new_line db 10,13,'$' 
+.code 
+
+start: 
+init_ds  ;s4itka dati
+out_str text  ;vivod texta
+out_str new_line ;perehod na druguju str 
+
+get_ch replacement  ;vvod simvola
+
+out_str new_line   ;perehod na novuy str
+
+
+delete text, replacement ;udalaetsa simvol 
+
+out_str text   ; vivod stroki
+;nahodit simvol,propuskaetzadannij simvol,ne zapisivaet ego a zapisivaet sleduushie simvoli
