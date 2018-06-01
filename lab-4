@@ -1,10 +1,10 @@
 .stack 100h
 .data  
 
-  temp dw 29 
+  temp dw 12 
   rez dd ?  
   
-  stroka db 'F=(4589*29)/x+(Y+5625)$' 
+  stroka db 'F=(9635*12)/x+(Y+3698)$' 
   In_x db 'Input X: $'
   In_y db 'Input Y: $'
   
@@ -92,13 +92,13 @@ mov ds,ax
                     
                          
        
-   mov ax,4589
+   mov ax,9635
    mul temp   
   
    div x  
    add ax,y
    
-   add ax,5625
+   add ax,3698
    
                
    mov bx,ax          
