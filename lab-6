@@ -1,10 +1,11 @@
-; F = Y * 10 + X / 32;      x char; y int
+; F = Y * 24 + X / 64;      x un char; y un int
 .data 
 x dw ?
 y dw ?
-rez dd ?
-input_X db 'Enter the X: $'
-input_Y db 'Enter the Y: $' 
+rez dd ?   
+stroka db ' F = Y * 24 + X / 64 $'
+input_X db 'Enter the X(un char): $'
+input_Y db 'Enter the Y(int): $' 
 enter db 0dh,0ah,'$'
 minus db 0dh,0ah,'-$'
 negative db 0dh,0ah,'negative$'
@@ -14,7 +15,10 @@ struneven db 0dh,0ah,'odd$'
 .code 
 start: 
     mov ax,@data 
-    mov ds,ax
+    mov ds,ax   
+    mov ah,09h
+    mov dx,offset stroka
+    int 21h  
     
     mov ah, 09h        
     mov dx, offset input_X
@@ -135,24 +139,26 @@ mov y,cx
     MOV AL, 0AH       
     INT 10H    
             ; operations
-            ; X / 2^5
+            ; X / 64(2^6)
     mov ax, x
-    sar ax, 5
+    sar ax, 6
     mov x, ax
     xor ax,ax 
     xor bx,bx
-            ; Y * 10
+            ; Y * 24
     mov bx,y
-    shl bx,2
+    shl bx,3 
+    add bx,y
+    add bx,y
+    add bx,y
     add bx,y
     shl bx,1
     mov y,bx 
-            ; rez 
-    mov ax, x
-    add ax, y 
-    mov rez, ax  
- 
-            ;chetnost
+            ;
+    mov ax,x
+    add ax,y
+    mov rez, ax           
+                     ;chetnost
     test ax, 1       ; esli poslednii bit = 1, to nechet; 0, to chet
     jnz Funeven      ; != , to vivod nechet
     jz Feven         ; =  , to vivod chet
