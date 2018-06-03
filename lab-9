@@ -7,70 +7,63 @@ y dw ?
 main proc far
 
 mov al, 12h
-mov ah, 0   ; 
-int 10h   
+mov ah, 00h   ; inicializaciya mishi
+int 10h       ; oblast isklucheniya
 
-mov ax, 1   ; cursor
+mov ax, 1h    ; pokazivaet cursor
 int 33h
 
 Next:
-mov ax, 3   ; pozicii cursor
-int 33h 
+mov ax, 3h    ; koordinati cursora
+int 33h       ; obrashenie k drivery
 
-call del
-call putpix ; vizov proceduri
-jmp Next
+call del      ; vizov procedur
+call putpix   ;
+jmp Next      ; perehod 
 
-mov ah,4ch
-int 21h
 main endp
 
 
 
 
 
-;procedure to print
-putpix proc     
-  mov al, 7   ; cvet
-  mov ah, 0ch    
-  shr cx,1    ; 
-  int 10h     ;
-  ret
-putpix endp  
 
-del proc 
-  push ax 
-  push cx   
-  push dx 
-  push bx 
+putpix proc    ; procedura vivod koordinat   
+  mov al, 2    ; cvet
+  mov ah, 0ch  ; sohranayaet koordinati     
+  shr cx,1      
+  int 10h      ; vivodit koorditani  
+  ret          ; vihod iz proceduri
+ 
+putpix endp    ; konec proceduri
+
+del proc       ; konec proceduri
+  push ax      ; zapis' v stek
+  push cx      ;
+  push dx      ; 
+  push bx      ;
   sub cx,x
-  jz yes1;0
-  jnz NO ;не 0
-  yes1:
-    sub dx,y
-    jz yes2
-    jnz NO
-  yes2:
-    ;mov ax,03h  
-    mov al,13h 
-    mov ah,0  
-    int 10h ;  ochistka
-    jmp 11
-
-NO: 
-;MOV CL,'N'
-;MOV AH,2
-;MOV DL,CL
-;INT 21H
-  11: 
-
-    pop bx
-    pop dx
-    pop cx
-    pop ax 
-    mov x,cx
-    mov y,dx 
-    ret
-del endp 
+  jz yes1      ; proverka na 0  
+  jnz no       ;
+  yes1:        ; cycl esli 0 dlya x
+  sub dx,y
+  jz yes2      ; proverka na 0
+  jnz no       ;
+  yes2:        ; cyc; esli 0 dlya y
+            
+  mov al,13h   ; vivod koordinat
+  int 10h      ; ochistka
+  jmp pr1nt
+    
+  no:          ; cycl esli != 0
+  pr1nt:    
+ 
+  pop bx       ; izvlechenie iz steka
+  pop dx       ;
+  pop cx       ;
+  pop ax       ;
+  mov x,cx
+  mov y,dx 
+  ret          ; vihod iz proceduri
+del endp       ; konec proceduri
 code ends 
-
