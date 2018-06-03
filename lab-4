@@ -1,20 +1,19 @@
-.stack 100h
+                        .stack 100h
 .data  
 
-  temp dw 12 
-  rez dd ?  
+  rez dw ?  
   
   stroka db 'F=(9635*12)/x+(Y+3698)$' 
   In_x db 'Input X: $'
   In_y db 'Input Y: $'
-  
+  c dw 12
   x dw ?
   y dw ?
 
 .code
 
 start:
-mov ax,@data                ;F=(9635*12)/x+(Y+3698)
+mov ax,@data               ;F=(9635*12)/x+(Y+3698)
 mov ds,ax
        
        
@@ -37,113 +36,179 @@ mov ds,ax
        int 21h
        
        
-       
-        
-        mov 	ah,01h
-        int 	21h 	
-        sub 	al,30h 
-        mov 	ah,0 	
-        mov 	bx,10
-        mov 	cx,ax 	
-    Input_x: 
-        mov 	ah,01h
-        int 	21h 	
-        cmp 	al,0dh 	; Enter
-        je 	  End_input_x
-        sub 	al,30h	
-        cbw		
-        xchg 	ax,cx	
-        mul 	bx	; ax*10
-        add 	cx,ax	; cx=ax*10+cx
-        jmp  Input_x;
-    
-  End_input_x:  mov x,cx
-                
-               
-        mov	dx,0ah            
-        mov	ah,02h
-        int	21h      
+          ;Input x
+mov ah,01h
+int 21h
+cmp al,45
+je NegativeX 
+
+sub al,30h
+mov ah,0
+mov bx,10
+mov cx,ax
+
+InputX:
+mov ah,01h
+int 21h       
+cmp al,0dh
+je EndX
+sub al,30h
+cbw          
+xchg ax,cx           
+mul bx
+add cx,ax
+jmp InputX
+
+EndX:
+mov x,cx
+jmp label1           
+ 
+NegativeX:
+sub al,45
+mov ah,01h
+int 21h
+sub al,30h
+mov ah,0
+mov bx,10
+mov cx,ax 
+ 
+InputNegX:
+mov ah,01h
+int 21h
+cmp al,0dh
+je EndNegX
+sub al,30h
+cbw
+xchg ax,cx
+mul bx
+add cx,ax
+jmp InputNegX 
+
+EndNegX:
+sub cx,1
+not cx
+mov x,cx          
+           
+label1:           
            
            
-           mov ah,09h
-       mov dx,offset In_y
-       int 21h        
-            
-                    
-                  mov 	ah,01h
-        int 	21h 	
-        sub 	al,30h 
-        mov 	ah,0 	
-        mov 	bx,10
-        mov 	cx,ax 	
-    Input_y: 
-        mov 	ah,01h
-        int 	21h 	
-        cmp 	al,0dh 	; Enter
-        je 	  End_input_y
-        sub 	al,30h	
-        cbw		
-        xchg 	ax,cx	
-        mul 	bx	; ax*10
-        add 	cx,ax	; cx=ax*10+cx
-        jmp  Input_y;
     
-  End_input_y:  mov y,cx   
-                    
-                         
-       
-   mov ax,9635
-   mul temp   
-  
-   idiv x  
-   add ax,y
-   
-   add ax,3698
-   
-               
-   mov bx,ax          
-      
-    
-                 
-                 
-                 
-            mov	ah,02h
-          mov	dx,0Dh  
-          int	21h  
-            
           mov	ah,02h
           mov	dx,0ah 
-          int	21h     
-          
- mov rez, bx
-mov rez+2, dx 
-mov cx, dx    
+          int	21h 
+    
+          mov ah,09h
+          mov dx,offset In_y
+          int 21h
+  
 
-mov ax,bx
-cwd  ;ax->dx:ax   
+          ;Input y
+mov ah,01h
+int 21h
+cmp al,45
+je NegativeY 
 
-mov bx, 10h
+sub al,30h
+mov ah,0
+mov bx,10
+mov cx,ax
+
+InputY:
+mov ah,01h
+int 21h       
+cmp al,0dh
+je EndY
+sub al,30h
+cbw          
+xchg ax,cx           
+mul bx
+add cx,ax
+jmp InputY
+
+EndY:
+mov y,cx
+jmp label2           
+ 
+NegativeY:
+sub al,45
+mov ah,01h
+int 21h
+sub al,30h
+mov ah,0
+mov bx,10
+mov cx,ax 
+ 
+InputNegY:
+mov ah,01h
+int 21h
+cmp al,0dh
+je EndNegY
+sub al,30h
+cbw
+xchg ax,cx
+mul bx
+add cx,ax
+jmp InputNegY 
+
+EndNegY:
+sub cx,1
+not cx
+mov y,cx          
+           
+label2:           
+                                ;F=(9635*12)/x+(Y+3698)
+                               
+ mov ax,9635
+ imul c
+ mov cx,x
+ add cx,y
+ add cx,3698
+ idiv cx
+ mov rez, ax        
+    
+  mov	ah,02h
+  mov	dx,0ah 
+  int	21h           
+ 
+ 
+ 
+ 
+mov cx,rez    
+    
+cmp cx,0
+jg label3
+sub cx,1
+not cx  
+mov ah,02h
+mov dl,45
+int 21h
+
+label3:
+mov ax,cx
+cwd  ;ax->dx:ax
+
+
+mov bx, 10
 push -1 
                
     digitIn: 
 mov dx, 0
-idiv bx
+div bx
 add dx, 30h 
 cmp dx,'9' 
 jg add2
 jmp push2
-add2:
-add dx, 7h 
-push2:
+
+    add2:
+add dx, 7h  
+
+     push2:
 push dx
 mov dx,0
 cmp ax, 0
 jne digitIn     
 
     
-               
-               
-
     digitOut:
 mov ah, 02h
 pop dx
@@ -158,5 +223,5 @@ exit:
  
  mov ax,4c00h
  int 21h        
-         
-end start
+   
+    end start
