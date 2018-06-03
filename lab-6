@@ -137,7 +137,7 @@ mov y,cx
             ; operations
             ; X / 2^5
     mov ax, x
-    ror ax, 5
+    sar ax, 5
     mov x, ax
     xor ax,ax 
     xor bx,bx
