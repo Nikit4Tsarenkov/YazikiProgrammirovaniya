@@ -3,15 +3,13 @@
 x dw ?
 y dw ?
 rez dd ?   
-stroka db ' F = Y * 24 + X / 64 $'
-input_X db 'Enter the X(un char): $'
-input_Y db 'Enter the Y(int): $' 
+stroka db 'F = Y * 24 + X / 64 $'
+input_X db 10,13, 'Enter the X(un char): $'
+input_Y db 10,13,'Enter the Y(un int): $' 
 enter db 0dh,0ah,'$'
-minus db 0dh,0ah,'-$'
-negative db 0dh,0ah,'negative$'
-positive db 0dh,0ah,'positive$'
-even db 0dh,0ah,'even$'
-struneven db 0dh,0ah,'odd$'
+positive db 0dh,0ah,'and positive$'
+even db 0dh,0ah,'the nubmer is even$'
+struneven db 0dh,0ah,'the nubmer is odd$'
 .code 
 start: 
     mov ax,@data 
@@ -27,7 +25,7 @@ start:
     mov 	ah,01h
     int 	21h	
     cmp     al,45
-    je      IsNegative
+   
 
     sub 	al,48 	
     mov 	ah,0 	
@@ -49,35 +47,8 @@ EndX:
     mov 	x,cx    
     jmp    label1 
 
-IsNegative:
-sub 	al,45    ; --
-mov 	ah,01h
-int 	21h	
-sub 	al,48 	 
-mov 	ah,0 	
-mov 	bx,10
-mov 	cx,ax
 
-InputXNegative: 
-mov 	ah,01h
-int 	21h 	
-cmp 	al,0dh 	
-je 	EndXNegative	
-sub 	ax,30h	     ;al
-;cbw		
-xchg 	ax,cx	
-mul 	bx	
-add 	cx,ax	
-jmp 	InputXNegative	
-EndXNegative:
-sub cx,1             ; obmen znaka
-not cx
-    mov x,cx
-   
 label1:
-MOV AH, 0EH
-MOV AL, 0AH       
-INT 10H 
 
     ;Input the Y:
     mov ah, 09h        
@@ -87,7 +58,6 @@ INT 10H
     mov 	ah,01h
     int 	21h	
     cmp     al,45
-    je      IsYNegative
     
     sub 	al,48 	
     mov 	ah,0 	
@@ -109,35 +79,10 @@ INT 10H
 
 mov 	y,cx 
 jmp label2
-IsYNegative:
-sub 	al,45
-mov 	ah,01h
-int 	21h	
-sub 	al,48 	
-mov 	ah,0 	
-mov 	bx,10
-mov 	cx,ax
 
-InPutYNegative: 
-mov 	ah,01h
-int 	21h 	
-cmp 	al,0dh 	
-je 	EndYNegative	
-sub 	al,30h	
-cbw		
-xchg 	ax,cx	
-mul 	bx	
-add 	cx,ax	
-jmp 	InPutYNegative	
-EndYNegative:
-sub 	cx,1
-not cx
-mov y,cx
     
     label2:
-    MOV AH, 0EH
-    MOV AL, 0AH       
-    INT 10H    
+     
             ; operations
             ; X / 64(2^6)
     mov ax, x
@@ -177,12 +122,11 @@ int 21h
 pop ax               
 jmp TheEnd
 TheEnd:  
-        ; - or +
+        ; +
 test ax,ax         ; elsi posledni bit
-js IsNegative1     ; = 1
-jns NoSign         ; =0
+jns NoSign         ; = >0
 NoSign:	
-mov rez,ax         ; vivod positive, vivod rez
+mov rez,ax         ; vivod positive rez
 push ax
 mov ah, 09h
 mov dx, offset positive
@@ -214,56 +158,7 @@ int 21h
 jmp digitOut1
 
 exit1:
-mov ax, 4c00h
-int 21h
  
-        ; !!! Esli posledni bit = 1, otricatel'noe chislo 
-IsNegative1:             ; vivod negative,-----> vivod - rez
-mov rez,ax 
-push ax
-mov ah, 09h
-mov dx, offset negative
-int 21h     
-
-pop ax  
-cwd  
-push -1	
-        ;Vivod otriczatel'nogo  -
-not dx           ; Perevod otriczatel'nogo v polozhitel'noe
-not ax 
-mov cx,1
-mov bx,0
-add ax,cx
-adc dx,bx        ; Slozhenie s uchetom perenosa
-
-mov bx, 10
-push ax 
-push dx
-                ; vivod - pered chislom, zatem vivod chisla
-mov ah, 09h      
-mov dx, offset minus
-int 21h
-
-pop dx
-pop ax  
-        ; Output
-digitInNegative:	
-div bx	
-add dx, 30h	
-push dx	
-mov dx,0	
-cmp ax, 0	
-jne digitInNegative	
-       
-digitOutNegative:
-mov ah, 02h
-pop dx
-cmp dx, -1
-je exitNegative 
-int 21h
-jmp digitOutNegative
-
-exitNegative: 
 mov ax, 4c00h
 int 21h                     
 end start
