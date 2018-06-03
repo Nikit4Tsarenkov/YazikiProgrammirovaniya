@@ -137,11 +137,10 @@ mov y,cx
             ; operations
             ; X / 2^5
     mov ax, x
-    mov cl, 5
-    sar ax, cl
+    ror ax, 5
     mov x, ax
-    mov ax, 0
-    mov bx, 0
+    xor ax,ax 
+    xor bx,bx
             ; Y * 10
     mov bx,y
     shl bx,2
