@@ -20,65 +20,63 @@ start:
     
     mov ah, 09h        
     mov dx, offset input_X
-    int 21h 
-    ;Input X:           
-    mov 	ah,01h
-    int 	21h	
-    cmp     al,45
-   
+    int 21h            
+    mov	ah,01h
+    int	21h	
+    cmp al,45
+    sub	al,48 	
+    mov	ah,0 	
+    mov	bx,10
+    mov	cx,ax
 
-    sub 	al,48 	
-    mov 	ah,0 	
-    mov 	bx,10
-    mov 	cx,ax
+    InputX: 
+    
+    mov	ah,01h
+    int	21h 	
+    cmp	al,0dh 	
+    je EndX	
+    sub	al,30h	
+    cbw		
+    xchg ax,cx	
+    mul	bx	
+    add	cx,ax	
+    jmp InputX	
+    
+    EndX:
+    
+    mov	x,cx    
+    jmp label1 
 
-InputX: 
-mov 	ah,01h
-int 	21h 	
-cmp 	al,0dh 	
-je 	EndX	
-sub 	al,30h	
-cbw		
-xchg 	ax,cx	
-mul 	bx	
-add 	cx,ax	
-jmp 	InputX	
-EndX:
-    mov 	x,cx    
-    jmp    label1 
+    label1:
 
-
-label1:
-
-    ;Input the Y:
     mov ah, 09h        
     mov dx, offset input_Y
     int 21h 
     
-    mov 	ah,01h
-    int 	21h	
-    cmp     al,45
+    mov	ah,01h
+    int	21h	
+    cmp al,45
     
-    sub 	al,48 	
-    mov 	ah,0 	
-    mov 	bx,10
-    mov 	cx,ax
+    sub	al,48 	
+    mov	ah,0 	
+    mov	bx,10
+    mov	cx,ax
     
     InputY: 
-    mov 	ah,01h
-    int 	21h 	
-    cmp 	al,0dh 	
-    je 	EndY	
-    sub 	al,30h	
-    cbw		
-    xchg 	ax,cx	
-    mul 	bx	
-    add 	cx,ax	
-    jmp 	InputY	
+    mov	ah,01h
+    int	21h 	
+    cmp	al,0dh 	
+    je EndY	
+    sub	al,30h		
+    xchg ax,cx	
+    mul	bx	
+    add	cx,ax	
+    jmp 	
+        	
     EndY:
 
-mov 	y,cx 
-jmp label2
+    mov	y,cx 
+    jmp label2
 
     
     label2:
@@ -107,7 +105,9 @@ jmp label2
     test ax, 1       ; esli poslednii bit = 1, to nechet; 0, to chet
     jnz Funeven      ; != , to vivod nechet
     jz Feven         ; =  , to vivod chet
-        Feven: 
+           
+    Feven: 
+    
     push ax
     mov ah, 09h
     mov dx, offset even
@@ -115,50 +115,55 @@ jmp label2
     pop ax
     jmp TheEnd
     Funeven:
-push ax
-mov ah, 09h
-mov dx, offset struneven
-int 21h
-pop ax               
-jmp TheEnd
-TheEnd:  
-        ; +
-test ax,ax         ; elsi posledni bit
-jns NoSign         ; = >0
-NoSign:	
-mov rez,ax         ; vivod positive rez
-push ax
-mov ah, 09h
-mov dx, offset positive
-int 21h
+    push ax
+    mov ah, 09h
+    mov dx, offset struneven
+    int 21h
+    pop ax               
+    jmp TheEnd
+  
+    TheEnd:    ; +
+             
+    test ax,ax       ; elsi posledni bit
+    jns NoSign       ; = >0        
+    
+    NoSign:	
+    
+    mov rez,ax       ; vivod positive rez
+    push ax
+    mov ah, 09h
+    mov dx, offset positive
+    int 21h
+    mov ah, 09h        
+    mov dx, offset enter
+    int 21h   
 
-mov ah, 09h        
-mov dx, offset enter
-int 21h   
-
-pop ax
-cwd     ;  ax->dx:ax
-mov bx, 10	
-push -1	
-        ; Output
-digitIn1:	
-div bx	
-add dx, 30h	
-push dx	
-mov dx,0	
-cmp ax, 0	
-jne digitIn1	     ;  zf = 0 -> next
+    pop ax
+    cwd              ;  ax->dx:ax
+    mov bx,10	
+    push -1	
+    
+    digitIn1:        ; Output
+    
+    div bx	
+    add dx,30h	
+    push dx	
+    mov dx,0	
+    cmp ax, 0	
+    jne digitIn1	 ;  zf = 0 -> next
        
-digitOut1:
-mov ah, 02h
-pop dx
-cmp dx, -1
-je exit1   
-int 21h
-jmp digitOut1
+    digitOut1:
+    
+    mov ah,02h
+    pop dx
+    cmp dx,-1
+    je exit1   
+    int 21h
+    jmp digitOut1
 
-exit1:
+    exit1:
  
-mov ax, 4c00h
-int 21h                     
-end start
+    mov ax, 4c00h
+    int 21h
+                         
+    end start
