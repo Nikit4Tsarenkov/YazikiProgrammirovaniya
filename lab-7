@@ -1,7 +1,7 @@
 .stack  
 .data
 len 	equ	10 
-mas	db	1,0,1,2,0,-7,1,0,-2,0
+mas	db	1,0,3,5,0,-7,1,0,-2,0
 rez	db	?                     
 filename db 'result.txt',0
 handle dw 0       
@@ -18,21 +18,21 @@ xor	ax,ax
 xor	si,si
 xor bl,bl	
 jcxz exit		
-cycl:
-cmp	mas[si],0	
-jle label
-add bl,mas[si]
+cycl:                         ; polojitelnie
+cmp	mas[si],0	              ; sravnenie kajdogo elementa s 0
+jle label                     ; esli bol'she 0
+add bl,mas[si]                ; sozdanie massiva s polojit chislami
 
-label:
-inc si
-loop cycl
-mov rez,bl                            
-mov ah,3Ch
+label:                        ; zapis' elementa bol'she 0
+inc si                        ; +1
+loop cycl                     ; povtorenie
+mov rez,bl                    ; rapis' rezulta v registr rez        
+mov ah,3Ch                    ; sozdanie faila
 	
 mov cx, 0
-mov dx,offset filename        ;name of file
+mov dx,offset filename        ; name of file
 int 21h                 
-mov handle,ax         ; sohranit deskriptor file 
+mov handle,ax                 ; sohranit deskriptor file 
 mov al,rez
 mov bx,10 
 push -1 
