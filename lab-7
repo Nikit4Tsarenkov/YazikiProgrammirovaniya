@@ -24,7 +24,7 @@ jle label                     ; esli bol'she 0
 add bl,mas[si]                ; sozdanie massiva s polojit chislami
 
 label:                        ; zapis' elementa bol'she 0
-inc si                        ; +1
+inc si                        ; perehod k next elementy1
 loop cycl                     ; povtorenie
 mov rez,bl                    ; rapis' rezulta v registr rez        
 mov ah,3Ch                    ; sozdanie faila
