@@ -1,0 +1,39 @@
+init_ds	macro
+mov ax, data 
+mov ds, ax 
+endm    
+
+include "delSpace.txt"
+
+
+
+.model small 
+.stack 100h 
+.data 
+     string db 100 dup (?) 
+
+.code 
+start: 
+
+    init_ds
+    xor si, si
+    inputString:
+    get_symbol
+    cmp al,0dh
+    jne inputString 
+    inc si
+    mov string[si],'$'
+    sub si, 2
+    mov cx, si
+    xor si, si
+    MOV AH, 0EH
+  MOV AL, 0AH       
+   INT 10H 
+  
+  outputString:
+cmp_with_space    
+output_symbol  
+    cmp si, cx
+    jne    outputString
+   end_of_program
+   end start 
