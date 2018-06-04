@@ -1,0 +1,239 @@
+ DATA1 SEGMENT
+   
+ path db "1.txt",0            ; imya faila             
+ buf  db ?                                
+ pos  db 0
+ 
+fildat db "rezult_file.txt",0 ;      
+handle dw 0,0
+db "20"
+year db 0, 0, '-'        
+mont db 0, 0, '-' 
+day  db 0, 0,' '  
+hour db 0, 0, ':'       
+minu db 0, 0, ':' 
+seco db 0, 0, ' ' 
+
+       db 0Dh, 0Ah, 24h        
+       db 0, 0
+       db 0, 0
+       matrica db "matrica                                                                                                        ", 0Dh, 0Ah, 24h;  
+       db 0Dh, 0Ah, 24h 
+    
+       rezult db 0Dh, 0Ah,"rezult=    ",0 ;
+       db 0Dh, 0Ah,24h  
+       enter  db " ",0;
+       db 0Dh, 0Ah, 24h
+       db 200 dup(?)
+       dp db ?
+ 
+DATA1 ENDS   
+SSEG SEGMENT STACK
+db 200 dup(?)
+SSEG ENDS 
+CODE SEGMENT  
+ASSUME CS:CODE, DS:DATA1, SS:SSEG    
+    mov ax,DATA1              ; nastroka DS
+    mov DS,ax                 ; na real'ni segment
+
+     call mat 
+     
+     cons2:
+     
+     call dat 
+
+mov ah, TAB 
+mov dx,  offset enter 
+
+int 21h 
+mov ah, 9 
+mov dx,  offset matrica  
+
+int 21h 
+
+mov ah, TAB 
+mov dx,  offset enter 
+int 21h 
+ 
+mov ah, TAB 
+mov dx,  offset rezult 
+int 21h 
+
+
+mov cx, 0                     ; attribut file
+mov ax, 3c00h                 ; sozdanie faila
+mov dx, offset fildat 
+int 21h 
+jb err                        ; error
+
+mov handle, ax
+
+mov ax, 4200h 
+mov bx, handle 
+xor cx, cx                  
+xor dx, dx                   
+int 21h 
+jb err 
+
+ 
+	mov ah, 40h               ; zapis' v file dat
+	lea dx, fildat            ;
+	mov cx, 40                ;
+	int 21h                   ;
+jb err
+
+
+                                                        
+	mov ah, 40h               ; zapis' v file matr
+	lea dx, matrica           ;
+	mov cx, 80                ;
+	int 21h                   ;
+jb err
+
+
+
+	mov ah, 40h               ; zapis' v file rezult
+	lea dx, rezult ;          ;
+	mov cx, 10                ;
+	int 21h                   ;
+jb err 
+
+
+
+err: 
+
+CODE ENDS
+jmp  exit0  
+
+
+
+dat  proc
+TAB EQU 9                     ; get date
+mov ah, 2ah
+int 21h 
+
+
+add cx, 0f830h                ; years
+mov ax, cx 
+call deci 
+mov w. year, ax 
+mov al, dh                    ; month
+call deci 
+mov w. mont, ax 
+mov al, dl                    ; day
+call deci 
+mov w. day, ax 
+
+
+mov ah, 2ch                   ; get time 
+int 21h 
+mov al, ch                    ; hour
+call deci 
+mov w. hour, ax 
+mov al, cl                    ; minute
+call deci 
+mov w. minu, ax 
+mov al, dh                    ; seconds
+call deci 
+mov w. seco, ax 
+
+
+
+mov ah, 9
+mov dx,  offset fildat 
+int 21h  
+
+
+deci:                      
+push cx                       ; calculate in decimal
+xor ah, ah 
+mov cl, 10 
+div cl 
+add ax, 3030h
+pop cx 
+ret
+
+error: 
+
+mov ah, 3eh                   ; close file
+mov bx,w. handle            
+int 21h 
+
+exxx:                     
+ret
+dat endp   
+
+mat  proc
+
+    LEA DI,  matrica
+    mov ax,DATA1              ; nastroika DS
+    mov DS,ax                 ; real segment
+  
+    mov ax,3d00h              ; otkrivaem file dlya read
+    lea dx,path               ; ykazatel' na file
+    int 21h                   ; deskriptor file
+    jc exit_1   
+    
+    mov bx,ax                 ; copy v bx ukazatel' file
+    xor cx,cx
+    xor dx,dx
+    mov ax,4200h              ; smestit' ukazatel' ot nachala
+    int 21h                   ; k nachalu
+                             
+    out_str:
+    
+    mov ah,3fh                ; chitaem iz file
+    mov cx,1                  
+    lea dx,buf                ; v pamyat' buf
+    int 21h         
+    cmp ax,cx                 ; esli EOF 
+    jnz close                 ; zakrivaem file
+    mov dl,buf
+    mov ah,2                  ; vivodim simvol v dl
+    int 21h    
+     
+        push bx               ; schitaem kol-vo 0
+        CMP dl, '0'
+      
+        JNE zz 
+        cmp dp,' '
+        JNE zz 
+        inc bp
+         
+        zz:
+        
+        mov dp,dl
+        push bx 
+        mov bx,bp
+        add bl, 30h
+        mov rezult+9,bl  
+        pop bx  
+                    
+        MOV [DI], AL         ; zapolnyaem matrix
+        INC DI
+   
+        jmp out_str 
+    
+ 
+    
+        close:
+                            ; zakrivaem file 
+        mov ah,3eh
+        int 21h
+        
+        exit_1:           
+
+        mov ah, TAB 
+        mov dx,  offset enter 
+        int 21h 
+ 
+
+        jmp cons2 
+        mat endp 
+ 
+        exit0:
+        
+        mov ah,4ch
+        int 21h 
+
+
